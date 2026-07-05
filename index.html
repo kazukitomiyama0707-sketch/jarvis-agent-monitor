@@ -197,6 +197,26 @@
   .ck-bars{display:flex;align-items:flex-end;gap:5px;height:70px}
   .ck-bars .b{width:10px;background:linear-gradient(180deg,var(--cy2),var(--cyd));border-radius:2px 2px 0 0;transition:height .6s;min-height:3px}
   .ck-scatter{position:absolute;font-family:'Orbitron';font-size:11px;color:var(--cy2);opacity:.7;text-shadow:0 0 5px var(--cy)}
+  /* リアクター横の明快な凡例 */
+  .rx-legend{position:absolute;left:2px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;
+    background:rgba(2,10,18,.62);border:1px solid var(--line);border-radius:6px;padding:10px 12px;backdrop-filter:blur(2px);z-index:3}
+  .rx-legend .row{display:flex;align-items:center;gap:9px;white-space:nowrap}
+  .rx-legend .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 6px currentColor}
+  .rx-legend .rn{font-family:'Orbitron';font-size:15px;color:#eafdff;min-width:18px;text-align:right}
+  .rx-legend .rl{color:var(--dim);font-size:10px;letter-spacing:1.5px}
+  @media(max-width:900px){.rx-legend{position:static;transform:none;margin:10px auto 0}}
+  /* 要対応パネル（右上） */
+  .ck-action{width:190px;display:flex;flex-direction:column;gap:7px}
+  .ck-action .ttl{font-family:'Orbitron';font-size:11px;letter-spacing:2px;color:var(--gold);display:flex;align-items:center;justify-content:space-between}
+  .ck-action .big{font-family:'Orbitron';font-size:30px;line-height:1;color:var(--red);text-shadow:0 0 12px var(--red)}
+  .ck-action.clear .big{color:var(--grn);text-shadow:0 0 12px var(--grn)}
+  .ck-action.clear .ttl{color:var(--grn)}
+  .ck-action .lst{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--ink);margin-top:2px}
+  .ck-action .it{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 7px;border-radius:3px;background:rgba(255,180,58,.08);border-left:2px solid var(--gold)}
+  .ck-action .it.anom{background:rgba(255,85,96,.1);border-left-color:var(--red)}
+  .ck-action .ok{font-size:11px;color:var(--grn);letter-spacing:1px}
+  .lbar .fill.grn{background:linear-gradient(90deg,#7be0a3,var(--grn))}
+  .lbar .fill.gold{background:linear-gradient(90deg,#ffe08a,var(--gold))}
 
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;padding:0 26px 14px}
   .stat{padding:12px 16px}
@@ -385,7 +405,7 @@
   <div class="ck-top">
     <div class="ck-gauges" id="ckGauges"></div>
     <div style="display:flex;flex-direction:column;gap:3px">
-      <div class="ck-scope"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><line class="wgrid" x1="0" y1="22" x2="400" y2="22"/><path class="wave" id="ckWave" d=""/></svg><div class="lab">WAVEFORM LOAD 98%</div></div>
+      <div class="ck-scope"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><line class="wgrid" x1="0" y1="22" x2="400" y2="22"/><path class="wave" id="ckWave" d=""/></svg><div class="lab">SYSTEM ACTIVITY</div></div>
       <div class="ck-ekg"><span class="ekglabel">A.I. CORE / SYSTEM PULSE</span>
         <svg viewBox="0 0 400 70" preserveAspectRatio="none"><path class="base" d="M0,35 H400"/><path class="beat" id="ekgPath" d=""/></svg>
       </div>
@@ -401,10 +421,8 @@
     </div>
     <div class="ck-reactor">
       <div id="ckReactor"></div>
-      <div class="ck-core"><div class="n" id="ckCoreN">0</div><div class="l">UNITS ONLINE</div><div class="sub" id="ckCoreSub">SYSTEM NOMINAL</div></div>
-      <div class="rx-ov big" id="ovTop" style="left:50%;top:1%;transform:translateX(-50%)">0</div>
-      <div class="rx-ov mid" id="ovL" style="right:80%;top:32%"></div>
-      <div class="rx-ov big" id="ovBot" style="left:50%;bottom:1%;transform:translateX(-50%)">0</div>
+      <div class="ck-core"><div class="n" id="ckCoreN">0</div><div class="l" id="ckCoreL">UNITS ONLINE</div><div class="sub" id="ckCoreSub">SYSTEM NOMINAL</div></div>
+      <div class="rx-legend" id="ckLegend"></div>
     </div>
     <div class="ck-side right">
       <div class="dial" id="ckDial"></div>
@@ -416,10 +434,6 @@
     <div class="ck-net" id="ckNet"></div>
     <div class="ck-bars" id="ckBars"></div>
   </div>
-  <div class="ck-scatter" style="right:16px;top:14px">1.4</div>
-  <div class="ck-scatter" style="right:16px;top:44%">0.6</div>
-  <div class="ck-scatter" style="right:16px;bottom:80px">2.17</div>
-  <div class="ck-scatter" style="left:16px;top:46%">1.8</div>
 </div>
 
 <div class="stats" id="stats"></div>
@@ -493,7 +507,9 @@ function setSpeaking(on){document.body.classList.toggle('speaking',on);document.
 function say(text){if(!voiceOn||!synth)return;const u=new SpeechSynthesisUtterance(text);const v=(lang==='ja')?jaVoice:enVoice;if(v)u.voice=v;u.lang=(lang==='ja')?'ja-JP':'en-GB';u.rate=(lang==='ja')?1.05:1.0;u.pitch=.9;u.onstart=()=>setSpeaking(true);u.onend=()=>setSpeaking(false);try{synth.cancel();synth.speak(u);}catch(e){}}
 function ensureVoice(){if(!voiceOn){voiceOn=true;syncVoiceBtn();}}
 function syncLangBtn(){const b=document.getElementById('langBtn');if(b)b.textContent='🌐 '+(lang==='ja'?'日本語':'ENGLISH');}
-function toggleLang(){lang=(lang==='ja')?'en':'ja';try{localStorage.setItem('jv_lang',lang);}catch(e){}syncLangBtn();ensureVoice();say(L('日本語に切り替えました、ボス。','Switching to English, sir.'));}
+function toggleLang(){lang=(lang==='ja')?'en':'ja';try{localStorage.setItem('jv_lang',lang);}catch(e){}syncLangBtn();
+  try{buildGauges();buildLoad();buildWarn();updateCockpit(snap.agents||[],snap.stats||{});}catch(e){}
+  ensureVoice();say(L('日本語に切り替えました、ボス。','Switching to English, sir.'));}
 
 /* ===== 音声入力 ===== */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition; let recog=null,listening=false;
@@ -647,7 +663,7 @@ document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='
 /* ===== 描画統合 ===== */
 /* ===== コックピットHUD ===== */
 let reactorC=816, dialN=44;
-const GAUGES=[{k:'UNITS'},{k:'PROC'},{k:'WAIT'},{k:'DONE'}];
+const GAUGES=[{ja:'稼働',en:'UNITS'},{ja:'処理',en:'WORK'},{ja:'待ち',en:'WAIT'},{ja:'完了',en:'DONE'}];
 function arcPath(cx,cy,r,a0,a1){const P=a=>[cx+r*Math.cos(a*Math.PI/180),cy+r*Math.sin(a*Math.PI/180)];const[x0,y0]=P(a0),[x1,y1]=P(a1);const big=(a1-a0)>180?1:0;return `M${x0.toFixed(1)},${y0.toFixed(1)} A${r},${r} 0 ${big} 1 ${x1.toFixed(1)},${y1.toFixed(1)}`;}
 function buildReactor(){
   const cx=200,cy=200; let ticks='';
@@ -670,7 +686,7 @@ function buildGauges(){
   const track=arcPath(42,42,34,135,405);
   document.getElementById('ckGauges').innerHTML=GAUGES.map((g,i)=>{
     let tk=''; for(let t=0;t<=10;t++){const a=(135+t*27)*Math.PI/180,x1=42+Math.cos(a)*30,y1=42+Math.sin(a)*30,x2=42+Math.cos(a)*34,y2=42+Math.sin(a)*34;tk+=`<line class="gtick" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;}
-    return `<div class="gauge"><svg viewBox="0 0 84 84"><path class="gtrack" d="${track}"/>${tk}<line class="needle" id="gn${i}" x1="42" y1="42" x2="42" y2="14"/><circle class="gcap" cx="42" cy="42" r="3"/></svg><div class="gval" id="gv${i}">0</div><div class="glabel">${g.k}</div></div>`;
+    return `<div class="gauge"><svg viewBox="0 0 84 84"><path class="gtrack" d="${track}"/>${tk}<line class="needle" id="gn${i}" x1="42" y1="42" x2="42" y2="14"/><circle class="gcap" cx="42" cy="42" r="3"/></svg><div class="gval" id="gv${i}">0</div><div class="glabel">${L(g.ja,g.en)}</div></div>`;
   }).join('');
 }
 function buildGlobe(){
@@ -689,11 +705,9 @@ function buildEkg(){let d='M0,35';for(let x=0;x<400;x+=100){d+=` L${x+24},35 L${
 function buildWave(){let d='M0,22';for(let x=0;x<=400;x+=4){const y=22+Math.sin(x/17)*12*(0.55+0.45*Math.sin(x/130));d+=` L${x},${y.toFixed(1)}`;}const e=document.getElementById('ckWave');if(e)e.setAttribute('d',d);}
 function buildVisor(){const e=document.getElementById('ckVisor');if(e)e.innerHTML=Array(9).fill('<span></span>').join('');}
 function buildStars(){let h='';for(let i=0;i<64;i++){h+=`<i style="left:${(i*53)%100}%;top:${(i*31)%100}%;animation-delay:${((i%20)*0.2).toFixed(1)}s"></i>`;}const e=document.getElementById('stars');if(e)e.innerHTML=h;}
-function buildWarn(){const e=document.getElementById('ckWarn');if(e)e.innerHTML=`<div class="ck-turbine"></div><div class="big" id="ckWarnBig">0.0</div>
-  <div class="row"><span>SYS LOAD</span><b id="ckWarnLoad">0%</b></div><div class="row"><span>THRUPUT</span><b id="ckWarnThr">0%</b></div>
-  <div class="noacc" id="ckNoacc">SCANNING</div>`;}
-const LOADBARS=[['SYSTEM LOAD','lb0'],['NEURAL THROUGHPUT','lb1'],['CORE TEMP','lb2']];
-function buildLoad(){const e=document.getElementById('ckLoad');if(e)e.innerHTML=LOADBARS.map(([n,id])=>`<div class="lbar" id="${id}w"><div style="display:flex;justify-content:space-between"><span>${n}</span><span id="${id}v">0%</span></div><div class="track"><div class="fill" id="${id}f" style="width:0%"></div></div></div>`).join('');}
+function buildWarn(){const e=document.getElementById('ckWarn');if(e){e.className='ck-warn ck-action';e.innerHTML=`<div class="ttl"><span id="ckActTtl">要対応</span></div><div class="big" id="ckActBig">0</div><div class="lst" id="ckActList"></div>`;}}
+const LOADBARS=[{ja:'処理中',en:'ACTIVE',id:'lb0'},{ja:'入力待ち',en:'AWAITING',id:'lb1'},{ja:'完了',en:'DONE',id:'lb2'}];
+function buildLoad(){const e=document.getElementById('ckLoad');if(e)e.innerHTML=LOADBARS.map(g=>`<div class="lbar" id="${g.id}w"><div style="display:flex;justify-content:space-between"><span>${L(g.ja,g.en)}</span><span id="${g.id}v">0</span></div><div class="track"><div class="fill" id="${g.id}f" style="width:0%"></div></div></div>`).join('');}
 function buildNet(){const N=9,pts=[];for(let i=0;i<N;i++)pts.push([18+((i*61)%364),12+((i*37)%46)]);let ln='';for(let i=0;i<N-1;i++){ln+=`<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+1][0]}" y2="${pts[i+1][1]}"/>`;if(i%2===0&&i+2<N)ln+=`<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+2][0]}" y2="${pts[i+2][1]}"/>`;}const dt=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3"/>`).join('');const e=document.getElementById('ckNet');if(e)e.innerHTML=`<span class="lab">NEURAL LINK MAP</span><svg viewBox="0 0 400 70" preserveAspectRatio="none">${ln}${dt}</svg>`;}
 function buildBars(){let h='';for(let i=0;i<18;i++)h+=`<div class="b" id="ckbar${i}" style="height:${6+((i*13)%46)}px"></div>`;const e=document.getElementById('ckBars');if(e)e.innerHTML=h;}
 function buildCockpit(){ try{ buildStars();buildVisor();buildReactor();buildGauges();buildGlobe();buildDial();buildEkg();buildWave();buildWarn();buildLoad();buildNet();buildBars(); }catch(e){} }
@@ -703,8 +717,9 @@ function updateCockpit(list, st){
     stuck=list.filter(a=>stuckInfo(a)).length;
   const setN=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   setN('ckCoreN', total);
-  setN('ckCoreSub', stuck?'⚠ ANOMALY DETECTED':(wait?'AWAITING YOUR INPUT':'SYSTEM NOMINAL'));
-  const cs=document.getElementById('ckCoreSub'); if(cs)cs.style.color=stuck?'var(--red)':(wait?'var(--gold)':'var(--dim)');
+  setN('ckCoreL', L('稼働ユニット','UNITS ONLINE'));
+  setN('ckCoreSub', stuck?L('⚠ 異常検知','⚠ ANOMALY'):(wait?L('あなたの対応待ち','AWAITING YOU'):L('全機正常','ALL NOMINAL')));
+  const cs=document.getElementById('ckCoreSub'); if(cs)cs.style.color=stuck?'var(--red)':(wait?'var(--gold)':'var(--grn)');
   const busy=total?Math.min(1,(work+wait)/total):0;
   const prog=document.getElementById('rxProg'); if(prog)prog.setAttribute('stroke-dashoffset',(reactorC*(1-busy)).toFixed(1));
   const fr=[total?Math.min(1,total/8):0, total?work/total:0, total?wait/total:0, total?done/total:0];
@@ -720,19 +735,25 @@ function updateCockpit(list, st){
   // labels
   const sl=document.getElementById('ckScanLabel'); if(sl)sl.textContent=work?'SCANNING…':'STANDBY';
   const pl=document.getElementById('ckPrepLabel'); if(pl){pl.textContent=wait?('⚠ AWAITING INPUT ('+wait+')'):'PREPARATION COMPLETE';pl.classList.toggle('warn',!!wait);}
-  // リアクター数値オーバーレイ
-  const ot=document.getElementById('ovTop'); if(ot)ot.textContent=(st&&st.completed!=null?st.completed:done);
-  const ol=document.getElementById('ovL'); if(ol)ol.innerHTML=work+'<br>'+wait+'<br>'+done;
-  const ob=document.getElementById('ovBot'); if(ob)ob.textContent=total;
-  // 負荷バー
-  const loadPct=Math.round(busy*100), thr=Math.min(99,40+work*12), temp=Math.min(99,28+stuck*24+wait*7);
-  const setBar=(id,v,warnq)=>{const f=document.getElementById(id+'f'),vv=document.getElementById(id+'v'),w=document.getElementById(id+'w');if(f)f.style.width=v+'%';if(vv)vv.textContent=v+'%';if(w)w.classList.toggle('warn',!!warnq||v>=85);};
-  setBar('lb0',loadPct,false); setBar('lb1',thr,false); setBar('lb2',temp,stuck>0);
-  // 警告クラスタ
-  setN('ckWarnBig',(st&&st.completed!=null?st.completed:done)+'.'+((total*7)%10));
-  setN('ckWarnLoad',loadPct+'%'); setN('ckWarnThr',thr+'%');
-  const na=document.getElementById('ckNoacc'); if(na){na.classList.remove('clear');
-    if(stuck){na.textContent='⚠ ANOMALY';}else if(wait){na.textContent='◉ AWAITING';}else{na.textContent='ALL CLEAR';na.classList.add('clear');}}
+  // リアクター横の凡例（状態内訳を明快に）
+  const lg=document.getElementById('ckLegend');
+  if(lg)lg.innerHTML=
+    `<div class="row"><span class="dot" style="color:var(--cy)"></span><span class="rn">${work}</span><span class="rl">${L('稼働中','WORKING')}</span></div>`+
+    `<div class="row"><span class="dot" style="color:var(--red)"></span><span class="rn">${wait}</span><span class="rl">${L('入力待ち','AWAITING')}</span></div>`+
+    `<div class="row"><span class="dot" style="color:var(--gold)"></span><span class="rn">${stuck}</span><span class="rl">${L('異常','ANOMALY')}</span></div>`+
+    `<div class="row"><span class="dot" style="color:var(--grn)"></span><span class="rn">${done}</span><span class="rl">${L('完了','COMPLETE')}</span></div>`;
+  // 艦隊内訳バー（実数）
+  [['lb0',work,''],['lb1',wait,'gold'],['lb2',done,'grn']].forEach(([id,c,cls])=>{
+    const f=document.getElementById(id+'f'),vv=document.getElementById(id+'v');
+    if(f){f.style.width=(total?Math.round(c/total*100):0)+'%';f.className='fill'+(cls?' '+cls:'');}
+    if(vv)vv.textContent=c+' / '+total;});
+  // 要対応パネル
+  const act=document.getElementById('ckWarn');
+  if(act){const need=wait+stuck; act.classList.toggle('clear',need===0);
+    setN('ckActTtl', L('要対応','ACTION')); setN('ckActBig', need);
+    const items=list.filter(a=>a.state==='waiting').slice(0,3).map(a=>`<div class="it">🙋 ${esc(a.cute)}</div>`)
+      .concat(list.filter(a=>stuckInfo(a)).slice(0,2).map(a=>`<div class="it anom">⚠ ${esc(a.cute)}</div>`));
+    const lst=document.getElementById('ckActList'); if(lst)lst.innerHTML=items.length?items.join(''):`<div class="ok">✓ ${L('全機正常・対応不要','All nominal')}</div>`;}
   // 棒グラフ（時間帯別完了）
   const byH=(st&&st.byHour)||{}; const nowH=new Date().getHours();
   for(let i=0;i<18;i++){const b=document.getElementById('ckbar'+i);if(!b)continue;const hh=(nowH-17+i+24)%24;const v=byH[hh]||0;const mx=Math.max(1,...Object.values(byH));b.style.height=(6+Math.round((v/mx)*46))+'px';b.style.opacity=(hh===nowH?1:0.7);}
