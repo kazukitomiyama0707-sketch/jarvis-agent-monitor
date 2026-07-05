@@ -142,6 +142,61 @@
   .dnum .n{font-family:'Orbitron';font-size:30px;color:var(--cy2);text-shadow:0 0 12px color-mix(in srgb,var(--cy) 50%,transparent)}
   .dnum .l{font-size:8.5px;letter-spacing:2px;color:var(--dim);margin-top:2px}
   .ck-mini{position:absolute;font-size:10px;font-family:'Orbitron';color:var(--cy2);text-shadow:0 0 6px var(--cy)}
+  /* コックピット枠・星 */
+  .cockframe{position:fixed;inset:0;pointer-events:none;z-index:2}
+  .facet{position:absolute;width:min(30vw,420px);height:min(22vh,220px);opacity:.55}
+  .facet.tl{left:0;top:0;clip-path:polygon(0 0,100% 0,0 100%);background:linear-gradient(135deg,rgba(28,58,98,.7),transparent 72%);border-top:1px solid var(--line)}
+  .facet.tr{right:0;top:0;clip-path:polygon(100% 0,0 0,100% 100%);background:linear-gradient(225deg,rgba(28,58,98,.7),transparent 72%)}
+  .facet.bl{left:0;bottom:0;clip-path:polygon(0 100%,100% 100%,0 0);background:linear-gradient(45deg,rgba(28,58,98,.7),transparent 72%)}
+  .facet.br{right:0;bottom:0;clip-path:polygon(100% 100%,0 100%,100% 0);background:linear-gradient(315deg,rgba(28,58,98,.7),transparent 72%)}
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cfefff;opacity:.5;animation:tw 4s infinite}
+  /* バイザー弧 */
+  .ck-visor{display:flex;justify-content:center;gap:6px;margin-bottom:8px}
+  .ck-visor span{width:34px;height:16px;border:1.5px solid color-mix(in srgb,var(--cy) 40%,transparent);border-bottom:none;border-radius:18px 18px 0 0;box-shadow:0 0 8px -2px var(--cy)}
+  .ck-visor span:nth-child(odd){opacity:.6}
+  /* 上段3分割 */
+  .ck-top{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px}
+  @media(max-width:900px){.ck-top{grid-template-columns:1fr}.ck-warn,.ck-scope{display:none}}
+  /* 波形（オシロ） */
+  .ck-scope{position:relative;min-width:180px}
+  .ck-scope svg{width:100%;height:44px;display:block;overflow:visible}
+  .ck-scope .wave{fill:none;stroke:var(--cy);stroke-width:1.5;opacity:.8}
+  .ck-scope .wgrid{stroke:color-mix(in srgb,var(--cy) 12%,transparent);stroke-width:1}
+  .ck-scope .lab{font-size:8.5px;letter-spacing:2px;color:var(--dim);margin:2px 0 0}
+  /* 警告クラスタ（右上） */
+  .ck-warn{width:180px;display:flex;flex-direction:column;gap:6px;font-size:10px}
+  .ck-warn .big{font-family:'Orbitron';font-size:22px;color:var(--cy2);text-align:right;text-shadow:0 0 10px var(--cy)}
+  .ck-warn .row{display:flex;justify-content:space-between;color:var(--dim);letter-spacing:1px}
+  .ck-warn .row b{color:var(--cy2);font-weight:400}
+  .ck-warn .noacc{background:repeating-linear-gradient(45deg,rgba(255,85,96,.25) 0 6px,transparent 6px 12px);border:1px solid rgba(255,85,96,.6);color:var(--red);text-align:center;letter-spacing:2px;padding:3px;font-weight:700;animation:warn 1.2s infinite}
+  .ck-warn .noacc.clear{background:repeating-linear-gradient(45deg,rgba(67,240,160,.18) 0 6px,transparent 6px 12px);border-color:rgba(67,240,160,.5);color:var(--grn);animation:none}
+  .ck-turbine{width:44px;height:44px;border-radius:50%;align-self:flex-end;border:1px solid var(--line);
+    background:conic-gradient(from 0deg,transparent,color-mix(in srgb,var(--cy) 30%,transparent),transparent 25%,transparent 50%,color-mix(in srgb,var(--cy) 30%,transparent),transparent 75%);animation:spin 3s linear infinite}
+  /* 負荷バー */
+  .ck-loadbars{display:flex;flex-direction:column;gap:5px;max-width:340px;margin:0 auto 6px}
+  .lbar{font-size:9px;letter-spacing:1.5px;color:var(--dim)}
+  .lbar .track{height:6px;border-radius:3px;background:color-mix(in srgb,var(--cy) 10%,transparent);border:1px solid var(--line);overflow:hidden;margin-top:2px}
+  .lbar .fill{height:100%;background:linear-gradient(90deg,var(--cy2),var(--cy));transition:width .8s}
+  .lbar.warn .fill{background:linear-gradient(90deg,#ffcf5c,var(--red))}
+  /* リアクター数値オーバーレイ */
+  .rx-ov{position:absolute;font-family:'Orbitron';color:var(--cy2);text-shadow:0 0 8px var(--cy);pointer-events:none}
+  .rx-ov.big{font-size:20px}
+  .rx-ov.mid{font-size:15px;line-height:1.25;text-align:left}
+  /* Preparation ラベル */
+  .ck-preps{display:flex;justify-content:space-between;max-width:360px;margin:6px auto 0;font-family:'Orbitron';font-size:9px;letter-spacing:2px;color:var(--cy);opacity:.85}
+  .ai-label{font-family:'Orbitron';font-size:10px;letter-spacing:3px;color:var(--cy);opacity:.75;margin-top:4px}
+  /* フッター：ネットワーク＆棒グラフ */
+  .ck-foot{display:grid;grid-template-columns:1fr auto;align-items:end;gap:20px;margin-top:10px}
+  @media(max-width:900px){.ck-foot{grid-template-columns:1fr}}
+  .ck-net{height:70px;position:relative}
+  .ck-net svg{width:100%;height:70px;overflow:visible}
+  .ck-net line{stroke:color-mix(in srgb,var(--cy) 25%,transparent);stroke-width:1}
+  .ck-net circle{fill:var(--cy);filter:drop-shadow(0 0 4px var(--cy))}
+  .ck-net .lab{position:absolute;left:2px;top:-2px;font-size:8.5px;letter-spacing:2px;color:var(--dim)}
+  .ck-bars{display:flex;align-items:flex-end;gap:5px;height:70px}
+  .ck-bars .b{width:10px;background:linear-gradient(180deg,var(--cy2),var(--cyd));border-radius:2px 2px 0 0;transition:height .6s;min-height:3px}
+  .ck-scatter{position:absolute;font-family:'Orbitron';font-size:11px;color:var(--cy2);opacity:.7;text-shadow:0 0 5px var(--cy)}
 
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;padding:0 26px 14px}
   .stat{padding:12px 16px}
@@ -305,6 +360,8 @@
 <body>
 <div id="boot"><div class="bcore"></div><div class="blines" id="blines"></div><div class="welcome" id="welcome">WELCOME BACK, SIR.</div></div>
 
+<div class="stars" id="stars"></div>
+<div class="cockframe"><div class="facet tl"></div><div class="facet tr"></div><div class="facet bl"></div><div class="facet br"></div></div>
 <div class="scr">
 <header>
   <div class="corewrap"><div class="core"></div></div>
@@ -324,26 +381,45 @@
 <div id="approveBanner" class="approve-banner" style="display:none">⚠ AUTO-APPROVE ACTIVE — 全ユニットのツール実行を確認なしで許可中。OFFにするまで承認プロンプトは出ません。</div>
 
 <div class="cockpit hud">
+  <div class="ck-visor" id="ckVisor"></div>
   <div class="ck-top">
     <div class="ck-gauges" id="ckGauges"></div>
-    <div class="ck-ekg"><span class="ekglabel">A.I. CORE / SYSTEM PULSE</span>
-      <svg viewBox="0 0 400 70" preserveAspectRatio="none"><path class="base" d="M0,35 H400"/><path class="beat" id="ekgPath" d=""/></svg>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <div class="ck-scope"><svg viewBox="0 0 400 44" preserveAspectRatio="none"><line class="wgrid" x1="0" y1="22" x2="400" y2="22"/><path class="wave" id="ckWave" d=""/></svg><div class="lab">WAVEFORM LOAD 98%</div></div>
+      <div class="ck-ekg"><span class="ekglabel">A.I. CORE / SYSTEM PULSE</span>
+        <svg viewBox="0 0 400 70" preserveAspectRatio="none"><path class="base" d="M0,35 H400"/><path class="beat" id="ekgPath" d=""/></svg>
+      </div>
     </div>
+    <div class="ck-warn" id="ckWarn"></div>
   </div>
+  <div class="ck-loadbars" id="ckLoad"></div>
   <div class="ck-main">
     <div class="ck-side left">
       <div class="globe" id="ckGlobe"></div>
       <div class="ck-label" id="ckScanLabel">SCANNING…</div>
+      <div class="ai-label">ARTIFICIAL INTELLIGENCE</div>
     </div>
     <div class="ck-reactor">
       <div id="ckReactor"></div>
       <div class="ck-core"><div class="n" id="ckCoreN">0</div><div class="l">UNITS ONLINE</div><div class="sub" id="ckCoreSub">SYSTEM NOMINAL</div></div>
+      <div class="rx-ov big" id="ovTop" style="left:50%;top:1%;transform:translateX(-50%)">0</div>
+      <div class="rx-ov mid" id="ovL" style="right:80%;top:32%"></div>
+      <div class="rx-ov big" id="ovBot" style="left:50%;bottom:1%;transform:translateX(-50%)">0</div>
     </div>
     <div class="ck-side right">
       <div class="dial" id="ckDial"></div>
       <div class="ck-label" id="ckPrepLabel">PREPARATION COMPLETE</div>
     </div>
   </div>
+  <div class="ck-preps"><span>◤ PREPARATION COMPLETE</span><span>PREPARATION COMPLETE ◥</span></div>
+  <div class="ck-foot">
+    <div class="ck-net" id="ckNet"></div>
+    <div class="ck-bars" id="ckBars"></div>
+  </div>
+  <div class="ck-scatter" style="right:16px;top:14px">1.4</div>
+  <div class="ck-scatter" style="right:16px;top:44%">0.6</div>
+  <div class="ck-scatter" style="right:16px;bottom:80px">2.17</div>
+  <div class="ck-scatter" style="left:16px;top:46%">1.8</div>
 </div>
 
 <div class="stats" id="stats"></div>
@@ -609,8 +685,18 @@ function buildDial(){
   for(let i=0;i<dialN;i++){const a=(i/dialN)*2*Math.PI-Math.PI/2,x1=cx+Math.cos(a)*(r-8),y1=cy+Math.sin(a)*(r-8),x2=cx+Math.cos(a)*r,y2=cy+Math.sin(a)*r;segs+=`<line class="dseg" data-i="${i}" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;}
   document.getElementById('ckDial').innerHTML=`<svg viewBox="0 0 188 188" class="dialSvg"><circle class="dring" cx="94" cy="94" r="84"/><g class="r-slow" style="transform-origin:94px 94px;animation:spin 30s linear infinite"><circle class="dring" cx="94" cy="94" r="68" stroke-dasharray="3 7"/></g>${segs}</svg><div class="dnum"><div class="n" id="ckDialN">0</div><div class="l">TASKS DONE</div></div>`;
 }
-function buildEkg(){let d='M0,35';for(let x=0;x<400;x+=100){d+=` L${x+24},35 L${x+30},14 L${x+36},56 L${x+42},35 L${x+100},35`;}document.getElementById('ekgPath').setAttribute('d',d.trim());}
-function buildCockpit(){ try{ buildReactor();buildGauges();buildGlobe();buildDial();buildEkg(); }catch(e){} }
+function buildEkg(){let d='M0,35';for(let x=0;x<400;x+=100){d+=` L${x+24},35 L${x+30},14 L${x+36},56 L${x+42},35 L${x+100},35`;}const e=document.getElementById('ekgPath');if(e)e.setAttribute('d',d.trim());}
+function buildWave(){let d='M0,22';for(let x=0;x<=400;x+=4){const y=22+Math.sin(x/17)*12*(0.55+0.45*Math.sin(x/130));d+=` L${x},${y.toFixed(1)}`;}const e=document.getElementById('ckWave');if(e)e.setAttribute('d',d);}
+function buildVisor(){const e=document.getElementById('ckVisor');if(e)e.innerHTML=Array(9).fill('<span></span>').join('');}
+function buildStars(){let h='';for(let i=0;i<64;i++){h+=`<i style="left:${(i*53)%100}%;top:${(i*31)%100}%;animation-delay:${((i%20)*0.2).toFixed(1)}s"></i>`;}const e=document.getElementById('stars');if(e)e.innerHTML=h;}
+function buildWarn(){const e=document.getElementById('ckWarn');if(e)e.innerHTML=`<div class="ck-turbine"></div><div class="big" id="ckWarnBig">0.0</div>
+  <div class="row"><span>SYS LOAD</span><b id="ckWarnLoad">0%</b></div><div class="row"><span>THRUPUT</span><b id="ckWarnThr">0%</b></div>
+  <div class="noacc" id="ckNoacc">SCANNING</div>`;}
+const LOADBARS=[['SYSTEM LOAD','lb0'],['NEURAL THROUGHPUT','lb1'],['CORE TEMP','lb2']];
+function buildLoad(){const e=document.getElementById('ckLoad');if(e)e.innerHTML=LOADBARS.map(([n,id])=>`<div class="lbar" id="${id}w"><div style="display:flex;justify-content:space-between"><span>${n}</span><span id="${id}v">0%</span></div><div class="track"><div class="fill" id="${id}f" style="width:0%"></div></div></div>`).join('');}
+function buildNet(){const N=9,pts=[];for(let i=0;i<N;i++)pts.push([18+((i*61)%364),12+((i*37)%46)]);let ln='';for(let i=0;i<N-1;i++){ln+=`<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+1][0]}" y2="${pts[i+1][1]}"/>`;if(i%2===0&&i+2<N)ln+=`<line x1="${pts[i][0]}" y1="${pts[i][1]}" x2="${pts[i+2][0]}" y2="${pts[i+2][1]}"/>`;}const dt=pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3"/>`).join('');const e=document.getElementById('ckNet');if(e)e.innerHTML=`<span class="lab">NEURAL LINK MAP</span><svg viewBox="0 0 400 70" preserveAspectRatio="none">${ln}${dt}</svg>`;}
+function buildBars(){let h='';for(let i=0;i<18;i++)h+=`<div class="b" id="ckbar${i}" style="height:${6+((i*13)%46)}px"></div>`;const e=document.getElementById('ckBars');if(e)e.innerHTML=h;}
+function buildCockpit(){ try{ buildStars();buildVisor();buildReactor();buildGauges();buildGlobe();buildDial();buildEkg();buildWave();buildWarn();buildLoad();buildNet();buildBars(); }catch(e){} }
 function updateCockpit(list, st){
   const total=list.length, work=list.filter(a=>ACTIVE.includes(a.state)).length,
     wait=list.filter(a=>a.state==='waiting').length, done=list.filter(a=>a.state==='done').length,
@@ -634,6 +720,22 @@ function updateCockpit(list, st){
   // labels
   const sl=document.getElementById('ckScanLabel'); if(sl)sl.textContent=work?'SCANNING…':'STANDBY';
   const pl=document.getElementById('ckPrepLabel'); if(pl){pl.textContent=wait?('⚠ AWAITING INPUT ('+wait+')'):'PREPARATION COMPLETE';pl.classList.toggle('warn',!!wait);}
+  // リアクター数値オーバーレイ
+  const ot=document.getElementById('ovTop'); if(ot)ot.textContent=(st&&st.completed!=null?st.completed:done);
+  const ol=document.getElementById('ovL'); if(ol)ol.innerHTML=work+'<br>'+wait+'<br>'+done;
+  const ob=document.getElementById('ovBot'); if(ob)ob.textContent=total;
+  // 負荷バー
+  const loadPct=Math.round(busy*100), thr=Math.min(99,40+work*12), temp=Math.min(99,28+stuck*24+wait*7);
+  const setBar=(id,v,warnq)=>{const f=document.getElementById(id+'f'),vv=document.getElementById(id+'v'),w=document.getElementById(id+'w');if(f)f.style.width=v+'%';if(vv)vv.textContent=v+'%';if(w)w.classList.toggle('warn',!!warnq||v>=85);};
+  setBar('lb0',loadPct,false); setBar('lb1',thr,false); setBar('lb2',temp,stuck>0);
+  // 警告クラスタ
+  setN('ckWarnBig',(st&&st.completed!=null?st.completed:done)+'.'+((total*7)%10));
+  setN('ckWarnLoad',loadPct+'%'); setN('ckWarnThr',thr+'%');
+  const na=document.getElementById('ckNoacc'); if(na){na.classList.remove('clear');
+    if(stuck){na.textContent='⚠ ANOMALY';}else if(wait){na.textContent='◉ AWAITING';}else{na.textContent='ALL CLEAR';na.classList.add('clear');}}
+  // 棒グラフ（時間帯別完了）
+  const byH=(st&&st.byHour)||{}; const nowH=new Date().getHours();
+  for(let i=0;i<18;i++){const b=document.getElementById('ckbar'+i);if(!b)continue;const hh=(nowH-17+i+24)%24;const v=byH[hh]||0;const mx=Math.max(1,...Object.values(byH));b.style.height=(6+Math.round((v/mx)*46))+'px';b.style.opacity=(hh===nowH?1:0.7);}
 }
 
 function renderAll(){updateCockpit(snap.agents||[], snap.stats||{});renderStats();renderRadar(snap.agents||[]);renderSys();renderAna();renderUnits();
