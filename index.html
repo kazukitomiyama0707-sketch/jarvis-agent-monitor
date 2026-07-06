@@ -325,6 +325,43 @@
   .edrow button:hover{filter:brightness(1.1)}
   .edrow button.ghost{background:none;border:1px solid var(--line);color:var(--dim);font-weight:400}
   #edMsg{font-size:12px}
+  /* ===== 近未来ホログラム演出 ===== */
+  .holo-grid{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.13;
+    background-image:linear-gradient(color-mix(in srgb,var(--cy) 60%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--cy) 60%,transparent) 1px,transparent 1px);
+    background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at 50% 38%,#000 28%,transparent 78%);mask-image:radial-gradient(ellipse at 50% 38%,#000 28%,transparent 78%);animation:gridpan 26s linear infinite}
+  @keyframes gridpan{to{background-position:48px 48px,48px 48px}}
+  .holo-scan{position:fixed;inset:0;pointer-events:none;z-index:4;background:repeating-linear-gradient(0deg,rgba(70,226,255,.028) 0 1px,transparent 1px 3px)}
+  .holo-scan::after{content:'';position:absolute;left:0;right:0;height:140px;top:-140px;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--cy) 9%,transparent),transparent);animation:scandown 7s linear infinite}
+  @keyframes scandown{to{top:100%}}
+  /* PRIORITY ブリーフ（次にやることを言葉で） */
+  .priority{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;margin:10px 26px 0;padding:13px 20px;border-radius:12px;
+    background:linear-gradient(135deg,color-mix(in srgb,var(--cy) 9%,rgba(4,14,26,.72)),rgba(4,12,22,.55));
+    border:1px solid color-mix(in srgb,var(--cy) 35%,transparent);box-shadow:0 0 30px -12px var(--cy),inset 0 0 42px -32px var(--cy);backdrop-filter:blur(6px)}
+  .priority::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--cy);box-shadow:0 0 14px var(--cy)}
+  .pr-ic{font-size:28px;line-height:1;color:var(--cy);text-shadow:0 0 14px var(--cy);animation:prpulse 2s infinite;flex:0 0 auto}
+  .pr-body{flex:1;min-width:0}
+  .pr-head{font-family:'Orbitron';font-size:16px;letter-spacing:.6px;color:#eafdff;line-height:1.3}
+  .pr-sub{font-size:12.5px;color:var(--ink);opacity:.85;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pr-cta{font-size:11px;letter-spacing:1px;color:var(--cy2);border:1px solid var(--line);border-radius:20px;padding:6px 14px;white-space:nowrap;flex:0 0 auto}
+  .pr-cta:empty{display:none}
+  .pr-sweep{position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 42%,color-mix(in srgb,var(--cy) 13%,transparent) 50%,transparent 58%);transform:translateX(-100%);animation:prsweep 4.5s infinite}
+  @keyframes prsweep{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+  @keyframes prpulse{0%,100%{opacity:1}50%{opacity:.45}}
+  .priority.warn{border-color:color-mix(in srgb,var(--gold) 55%,transparent);box-shadow:0 0 34px -10px var(--gold),inset 0 0 42px -32px var(--gold)}
+  .priority.warn::before{background:var(--gold);box-shadow:0 0 14px var(--gold)} .priority.warn .pr-ic{color:var(--gold);text-shadow:0 0 14px var(--gold)} .priority.warn .pr-cta{color:var(--gold);cursor:pointer}
+  .priority.crit{border-color:color-mix(in srgb,var(--red) 60%,transparent);animation:prcrit 1.4s infinite}
+  .priority.crit::before{background:var(--red);box-shadow:0 0 16px var(--red)} .priority.crit .pr-ic{color:var(--red);text-shadow:0 0 16px var(--red)} .priority.crit .pr-cta{color:#fff;background:color-mix(in srgb,var(--red) 30%,transparent);border-color:var(--red);cursor:pointer}
+  @keyframes prcrit{0%,100%{box-shadow:0 0 40px -8px var(--red),inset 0 0 42px -30px var(--red)}50%{box-shadow:0 0 64px 0px var(--red),inset 0 0 42px -22px var(--red)}}
+  .priority.ok{border-color:color-mix(in srgb,var(--grn) 45%,transparent);box-shadow:0 0 26px -14px var(--grn)}
+  .priority.ok::before{background:var(--grn);box-shadow:0 0 12px var(--grn)} .priority.ok .pr-ic{color:var(--grn);text-shadow:0 0 12px var(--grn)}
+  .priority.clickable{cursor:pointer} .priority.clickable:hover{filter:brightness(1.08)}
+  /* ユニットカード：状態カラーの縦ストライプで一目で判別 */
+  .unit{position:relative;border-left:3px solid transparent;transition:border-color .3s,box-shadow .3s}
+  .unit.s-wait{border-left-color:var(--red);box-shadow:inset 6px 0 20px -16px var(--red)}
+  .unit.s-work{border-left-color:var(--cy)}
+  .unit.s-done{border-left-color:var(--grn)}
+  .unit.s-idle{border-left-color:var(--dim)}
+  .unit.stuck{border-left-color:var(--gold)!important;box-shadow:inset 6px 0 20px -14px var(--gold)}
   .mission{font-size:11.5px;color:var(--ink);opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   .umeta{font-size:10px;color:var(--dim);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   .ustatus{display:inline-block;font-size:10px;letter-spacing:2px;padding:2px 9px;border-radius:3px;border:1px solid currentColor;margin-top:5px}
@@ -398,6 +435,8 @@
 <div id="boot"><div class="bcore"></div><div class="blines" id="blines"></div><div class="welcome" id="welcome">WELCOME BACK, SIR.</div></div>
 
 <div class="stars" id="stars"></div>
+<div class="holo-grid"></div>
+<div class="holo-scan"></div>
 <div class="cockframe"><div class="facet tl"></div><div class="facet tr"></div><div class="facet bl"></div><div class="facet br"></div></div>
 <div class="scr">
 <header>
@@ -415,6 +454,7 @@
   </div>
 </header>
 <div class="statusline" id="statusline"><span class="live-dot"></span><span id="statustxt">INITIALIZING…</span><span id="sgInd" class="sg-ind" style="display:none">🌙 SLEEP GUARD ON</span></div>
+<div class="priority" id="priority" role="status"><div class="pr-ic" id="prIc">◉</div><div class="pr-body"><div class="pr-head" id="prHead">SCANNING…</div><div class="pr-sub" id="prSub"></div></div><div class="pr-cta" id="prCta"></div><div class="pr-sweep"></div></div>
 <div id="approveBanner" class="approve-banner" style="display:none">⚠ AUTO-APPROVE ACTIVE — 全ユニットのツール実行を確認なしで許可中。OFFにするまで承認プロンプトは出ません。</div>
 
 <div class="cockpit hud">
@@ -607,7 +647,8 @@ function unitHTML(a){const st=STATUS[a.state]||STATUS.working,pct=progressPct(a)
   let readout;if(stuck)readout=`<div class="readout alert">${esc(stuck.text)}</div>`;else if(a.state==='waiting')readout=`<div class="readout input">◉ AWAITING INPUT — ⏱ ${fmt(a.ageSec||0)} 経過</div>`;else if(a.state==='done')readout=`<div class="readout soon">✓ MISSION COMPLETE</div>`;else if(a.state==='idle')readout='';else{const e=etaCalc(a.avg,a.startedAt);readout=e.kind==='calc'?`<div class="readout calc">⧗ ETA: CALIBRATING…</div>`:e.kind==='soon'?`<div class="readout soon">⧗ ETA: 完了間近</div>`:`<div class="readout eta">⧗ ETA: 残り約 ${e.min} 分 <span style="opacity:.7">(平均${e.avgMin}分)</span></div>`;}
   const acts=(a.history||[]).slice(-4);const log=acts.length?acts.map(h=>`<div class="l"><span class="tt">${esc(h.t)}</span><span>${esc(h.text)}</span></div>`).join(''):`<div class="l"><span>—</span></div>`;
   const dir=a.desc?`<span class="lastdir" title="${esc(a.desc)}"><b>DIRECTIVE</b> ${esc(a.desc)}</span>`:'';
-  return `<div class="hud unit ${stuck?'stuck':''}" data-id="${esc(a.id||'')}"><div class="scan"></div>
+  const scls=a.state==='waiting'?'s-wait':(a.state==='done'?'s-done':(a.state==='idle'?'s-idle':'s-work'));
+  return `<div class="hud unit ${scls} ${stuck?'stuck':''}" data-id="${esc(a.id||'')}"><div class="scan"></div>
     <div class="uhead">${reactor}<div class="uinfo"><div class="cnrow"><div class="callsign" title="${esc(purpose(a))}">${esc(label(a))}</div><button class="editbtn" title="名前・メモを編集">✎ 編集</button></div>${a.customName?`<div class="cpurpose" title="${esc(purpose(a))}">▸ ${esc(purpose(a))}</div>`:''}<div class="umeta">📂 ${esc(a.repo)} · ${a.state==='idle'?'STANDBY':('UPD '+fmt(a.ageSec||0)+' ago')}</div><span class="ustatus" style="color:${st.c}">${st.l}</span></div></div>${a.note?`<div class="unote">📝 ${esc(a.note)}</div>`:''}
     ${readout}<div class="directives"><span class="chip gold">⌖ ${a.tasks||0} DIRECTIVES</span>${dir}</div><div class="log">${log}</div></div>`;}
 
@@ -796,7 +837,28 @@ function updateCockpit(list, st){
   for(let i=0;i<18;i++){const b=document.getElementById('ckbar'+i);if(!b)continue;const hh=(nowH-17+i+24)%24;const v=byH[hh]||0;const mx=Math.max(1,...Object.values(byH));b.style.height=(6+Math.round((v/mx)*46))+'px';b.style.opacity=(hh===nowH?1:0.7);}
 }
 
-function renderAll(){updateCockpit(snap.agents||[], snap.stats||{});renderStats();renderRadar(snap.agents||[]);renderSys();renderAna();renderUnits();
+function renderPriority(){
+  const el=document.getElementById('priority'); if(!el)return;
+  const list=snap.agents||[]; const wait=list.filter(a=>a.state==='waiting'); const stuck=list.filter(a=>stuckInfo(a)); const work=list.filter(a=>ACTIVE.includes(a.state)&&a.state!=='waiting');
+  const ic=document.getElementById('prIc'),hd=document.getElementById('prHead'),sb=document.getElementById('prSub'),cta=document.getElementById('prCta');
+  const names=arr=>arr.slice(0,3).map(a=>label(a)).join(' ・ ')+(arr.length>3?L(` 他${arr.length-3}`,` +${arr.length-3}`):'');
+  el.classList.remove('warn','crit','ok','clickable'); el.onclick=null;
+  if(stuck.length){ el.classList.add('crit','clickable'); ic.textContent='⚠';
+    hd.textContent=L(`異常を検知 — ${stuck.length}件、確認が必要です`,`${stuck.length} anomaly${stuck.length>1?'ies':''} — needs your check`);
+    sb.textContent=names(stuck); cta.textContent=L('確認する →','Inspect →'); el.onclick=()=>openModal(stuck[0].id);
+  } else if(wait.length){ el.classList.add('warn','clickable'); ic.textContent='🙋';
+    hd.textContent=L(`あなたの対応待ち — ${wait.length}件あります`,`${wait.length} unit${wait.length>1?'s':''} awaiting your input`);
+    sb.textContent=names(wait); cta.textContent=L('対応する →','Respond →'); el.onclick=()=>openModal(wait[0].id);
+  } else if(work.length){ ic.textContent='▶';
+    hd.textContent=L(`${work.length}機が自律稼働中 — 今のところ対応不要です`,`${work.length} unit${work.length>1?'s':''} running autonomously — nothing needed`);
+    const eta=work.filter(a=>a.avg).sort((a,b)=>(etaCalc(a.avg,a.startedAt).min||999)-(etaCalc(b.avg,b.startedAt).min||999))[0];
+    if(eta){const e=etaCalc(eta.avg,eta.startedAt);const t=e.kind==='ok'?L(`約${e.min}分`,`~${e.min}m`):e.kind==='soon'?L('完了間近','imminent'):L('計測中','calibrating');sb.textContent=L(`最短完了予測: ${label(eta)}（${t}）`,`Next done: ${label(eta)} (${t})`);}else sb.textContent=L('全ユニット正常に進行中。','All units progressing normally.');
+    cta.textContent='';
+  } else { el.classList.add('ok'); ic.textContent='✓';
+    hd.textContent=L('全ミッション完了・待機中','All missions complete — standing by');
+    sb.textContent=L('新しいタスクの投入をお待ちしています、ボス。','Awaiting new directives, sir.'); cta.textContent=''; }
+}
+function renderAll(){updateCockpit(snap.agents||[], snap.stats||{});renderPriority();renderStats();renderRadar(snap.agents||[]);renderSys();renderAna();renderUnits();
   const now=Date.now();for(const a of (snap.agents||[])){if(a.state==='waiting'){const m=meta[a.id]||(meta[a.id]={waitingSince:now-(a.ageSec||0)*1000,lastAlert:0});const sec=(now-m.waitingSince)/1000;if(sec>=ALERT_SEC&&(now-m.lastAlert)>=REPEAT_SEC*1000){m.lastAlert=now;fireAlert(label(a)||'UNIT',sec);}}else delete meta[a.id];}
   // 自動アナウンス
   if(booted){for(const a of (snap.agents||[])){const prev=prevAnnounce[a.id];if(prev&&prev!==a.state){if(a.state==='waiting'){sfx('alert');say(L(`ボス、${label(a)}が入力待ちです。`,`Sir, ${label(a)} requires your input.`));}else if(a.state==='done'){sfx('done');say(L(`${label(a)}、ミッション完了です。`,`${label(a)}, mission complete.`));}}if(stuckInfo(a)&&!prevAnnounce['st_'+a.id]){sfx('alert');say(L(`警告。${label(a)}に異常を検知しました。`,`Warning. Anomaly on ${label(a)}.`));}prevAnnounce['st_'+a.id]=!!stuckInfo(a);}}
