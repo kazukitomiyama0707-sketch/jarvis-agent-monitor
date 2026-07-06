@@ -309,6 +309,22 @@
   .uinfo{min-width:0;flex:1}
   .callsign{font-size:14px;font-weight:700;line-height:1.3;letter-spacing:.2px;color:#eafcff;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .sg-ind{margin-left:10px;font-size:10px;letter-spacing:1px;color:#c3b0ff;border:1px solid rgba(150,120,255,.45);border-radius:3px;padding:1px 7px;background:rgba(90,70,160,.16)}
+  /* 編集可能な名前 + メモ */
+  .cnrow{display:flex;align-items:flex-start;gap:8px}
+  .editbtn{margin-left:auto;flex:0 0 auto;background:none;border:1px solid var(--line);color:var(--cy2);border-radius:4px;cursor:pointer;font-size:10px;letter-spacing:1px;padding:2px 8px}
+  .editbtn:hover{background:color-mix(in srgb,var(--cy) 16%,transparent);border-color:var(--cy)}
+  .cpurpose{font-size:11px;color:var(--dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .unote{margin:8px 14px 0;font-size:13px;line-height:1.45;color:#ffe6a1;background:rgba(255,200,80,.11);border-left:3px solid var(--gold);border-radius:4px;padding:7px 10px;white-space:pre-wrap;word-break:break-word}
+  .editpanel{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:8px;background:rgba(2,12,22,.55)}
+  .editpanel .el{display:block;font-size:10px;letter-spacing:1.5px;color:var(--cy2);margin:8px 0 4px}
+  .editpanel .el:first-child{margin-top:0}
+  .editpanel input,.editpanel textarea{width:100%;box-sizing:border-box;background:rgba(0,8,16,.7);border:1px solid var(--line);border-radius:6px;color:#eafcff;font-size:15px;padding:9px 11px;font-family:inherit;resize:vertical}
+  .editpanel input:focus,.editpanel textarea:focus{outline:none;border-color:var(--cy);box-shadow:0 0 0 2px color-mix(in srgb,var(--cy) 22%,transparent)}
+  .edrow{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .edrow button{background:var(--cy);color:#001018;border:none;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer;font-size:13px}
+  .edrow button:hover{filter:brightness(1.1)}
+  .edrow button.ghost{background:none;border:1px solid var(--line);color:var(--dim);font-weight:400}
+  #edMsg{font-size:12px}
   .mission{font-size:11.5px;color:var(--ink);opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   .umeta{font-size:10px;color:var(--dim);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   .ustatus{display:inline-block;font-size:10px;letter-spacing:2px;padding:2px 9px;border-radius:3px;border:1px solid currentColor;margin-top:5px}
@@ -556,8 +572,10 @@ async function sendReply(id, text){
 
 /* ===== レポート ===== */
 function counts(){const L=snap.agents||[];return{n:L.length,work:L.filter(a=>ACTIVE.includes(a.state)).length,wait:L.filter(a=>a.state==='waiting'),stuck:L.filter(a=>stuckInfo(a)),done:L.filter(a=>a.state==='done').length};}
-// ユニットの「名前」＝やっているタスクの目的（AIタイトル）。かわいい名前は使わない。
-function label(a){let t=(a&&(a.fullName||a.name||a.repo))||'UNIT';t=String(t).replace(/\s+/g,' ').trim();return t.length>46?t.slice(0,45)+'…':t;}
+// ユニットの「名前」＝ユーザー指定名があれば優先、無ければタスクの目的（AIタイトル）。
+function label(a){let t=(a&&(a.customName||a.fullName||a.name||a.repo))||'UNIT';t=String(t).replace(/\s+/g,' ').trim();return t.length>46?t.slice(0,45)+'…':t;}
+function purpose(a){let t=(a&&(a.fullName||a.name||a.repo))||'';return String(t).replace(/\s+/g,' ').trim();}
+async function sendLabel(id,name,note){try{const r=await fetch('/api/label',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,name,note})});return await r.json();}catch(e){return {error:'net'};}}
 function reportStatus(){ensureVoice();const c=counts();say(L(`状況報告です、ボス。ユニット${c.n}機が稼働中。作業中${c.work}、入力待ち${c.wait.length}、異常${c.stuck.length}、完了${c.done}です。`,`Status report, sir. ${c.n} units online. ${c.work} processing. ${c.wait.length} awaiting your input. ${c.stuck.length} anomalies. ${c.done} complete.`));}
 function reportWaiting(){ensureVoice();const c=counts();if(!c.wait.length){say(L('入力待ちのユニットはありません、ボス。','No units awaiting input, sir. All clear.'));return;}flashUnits(c.wait.map(a=>a.id));say(L(`${c.wait.length}機が入力待ちです、ボス。${c.wait.slice(0,4).map(a=>label(a)).join('、')}。`,`${c.wait.length} unit${c.wait.length>1?'s':''} awaiting your input, sir. ${c.wait.slice(0,4).map(a=>label(a)).join(', ')}.`));}
 function reportAnomalies(){ensureVoice();const c=counts();if(!c.stuck.length){say(L('異常はありません、ボス。全システム正常です。','No anomalies, sir. Systems nominal.'));return;}flashUnits(c.stuck.map(a=>a.id));say(L(`警告です、ボス。${c.stuck.length}件の異常を検知。${c.stuck.map(a=>label(a)).join('、')}。`,`Warning, sir. ${c.stuck.length} anomal${c.stuck.length>1?'ies':'y'} on ${c.stuck.map(a=>label(a)).join(', ')}.`));}
@@ -590,7 +608,7 @@ function unitHTML(a){const st=STATUS[a.state]||STATUS.working,pct=progressPct(a)
   const acts=(a.history||[]).slice(-4);const log=acts.length?acts.map(h=>`<div class="l"><span class="tt">${esc(h.t)}</span><span>${esc(h.text)}</span></div>`).join(''):`<div class="l"><span>—</span></div>`;
   const dir=a.desc?`<span class="lastdir" title="${esc(a.desc)}"><b>DIRECTIVE</b> ${esc(a.desc)}</span>`:'';
   return `<div class="hud unit ${stuck?'stuck':''}" data-id="${esc(a.id||'')}"><div class="scan"></div>
-    <div class="uhead">${reactor}<div class="uinfo"><div class="callsign" title="${esc(a.fullName||a.name)}">${esc(label(a))}</div><div class="umeta">📂 ${esc(a.repo)} · ${a.state==='idle'?'STANDBY':('UPD '+fmt(a.ageSec||0)+' ago')}</div><span class="ustatus" style="color:${st.c}">${st.l}</span></div></div>
+    <div class="uhead">${reactor}<div class="uinfo"><div class="cnrow"><div class="callsign" title="${esc(purpose(a))}">${esc(label(a))}</div><button class="editbtn" title="名前・メモを編集">✎ 編集</button></div>${a.customName?`<div class="cpurpose" title="${esc(purpose(a))}">▸ ${esc(purpose(a))}</div>`:''}<div class="umeta">📂 ${esc(a.repo)} · ${a.state==='idle'?'STANDBY':('UPD '+fmt(a.ageSec||0)+' ago')}</div><span class="ustatus" style="color:${st.c}">${st.l}</span></div></div>${a.note?`<div class="unote">📝 ${esc(a.note)}</div>`:''}
     ${readout}<div class="directives"><span class="chip gold">⌖ ${a.tasks||0} DIRECTIVES</span>${dir}</div><div class="log">${log}</div></div>`;}
 
 function applyFilterSort(list){
@@ -635,8 +653,15 @@ function openModal(id){const a=(snap.agents||[]).find(x=>x.id===id);if(!a)return
   const fullLog=(a.history||[]).map(h=>`<div class="l"><span class="tt">${esc(h.t)}</span><span>${esc(h.text)}</span></div>`).join('')||'<div class="l">—</div>';
   const bar=pct!=null?`<div class="mbar"><div class="f" style="width:${pct}%"></div><div class="t">${pct}%</div></div>`:'';
   document.getElementById('modalbox').innerHTML=`<span class="mclose" onclick="closeModal()">✕</span>
-    <h2>${esc(label(a)||a.name)} ${stuck?'<span style="color:var(--red);font-size:12px">⚠ ANOMALY</span>':''}</h2>
+    <h2>${esc(label(a))} ${stuck?'<span style="color:var(--red);font-size:12px">⚠ ANOMALY</span>':''}</h2>
     <div style="color:var(--dim);font-size:11px;letter-spacing:2px;margin-bottom:12px">${st.l}</div>
+    <div class="editpanel">
+      <label class="el">名前（自分でつけられます）</label>
+      <input id="edName" maxlength="80" placeholder="${esc(purpose(a)||'このユニットの名前')}" value="${esc(a.customName||'')}">
+      <label class="el">メモ / ステータス（自由記入・保存されます）</label>
+      <textarea id="edNote" maxlength="280" rows="2" placeholder="例: 承認待ち、レビュー後にmerge ／ あとで確認する">${esc(a.note||'')}</textarea>
+      <div class="edrow"><button id="edSave">💾 保存</button>${a.customName?'<button id="edReset" class="ghost">名前を自動に戻す</button>':''}<span id="edMsg"></span></div>
+    </div>
     <div class="mrow"><b>MISSION</b><span class="val">${esc(a.fullName||a.name)}</span></div>
     <div class="mrow"><b>REPO</b><span class="val">${esc(a.repo)}</span></div>
     ${a.cwd?`<div class="mrow"><b>CWD</b><span class="val">${esc(a.cwd)}</span></div>`:''}
@@ -651,6 +676,14 @@ function openModal(id){const a=(snap.agents||[]).find(x=>x.id===id);if(!a)return
       <div class="replymsg" id="replymsg"></div></div>`
       :(a.state==='waiting'?`<div class="replybox"><div class="rl" style="color:var(--dim)">📡 返信は tmux 内で起動した claude のみ可能（このユニットは未検出）</div></div>`:'')}`;
   document.getElementById('modal').classList.add('show');
+  // 名前・メモの編集
+  const esv=document.getElementById('edSave');
+  if(esv){ esv.addEventListener('click',async()=>{ const nm=document.getElementById('edName').value.trim(),nt=document.getElementById('edNote').value.trim(),m=document.getElementById('edMsg'); m.style.color='var(--dim)'; m.textContent='保存中…';
+      const j=await sendLabel(a.id,nm,nt);
+      if(j&&j.ok){ const ag=(snap.agents||[]).find(x=>x.id===a.id); if(ag){ag.customName=nm;ag.note=nt;} m.style.color='var(--grn)'; m.textContent='✓ 保存しました'; renderUnits(); }
+      else { m.style.color='var(--red)'; m.textContent='⚠ 保存できません（デモ/未接続）'; } }); }
+  const ers=document.getElementById('edReset');
+  if(ers){ ers.addEventListener('click',async()=>{ const nt=document.getElementById('edNote').value.trim(); await sendLabel(a.id,'',nt); const ag=(snap.agents||[]).find(x=>x.id===a.id); if(ag){ag.customName='';ag.note=nt;} document.getElementById('edName').value=''; const m=document.getElementById('edMsg'); m.style.color='var(--grn)'; m.textContent='✓ 自動名に戻しました'; renderUnits(); }); }
   const rb=document.getElementById('replybtn');
   if(rb){ const send=async()=>{ const inp=document.getElementById('replyinput'); const t=inp.value.trim(); if(!t)return;
       const msg=document.getElementById('replymsg'); msg.textContent='送信中…';
